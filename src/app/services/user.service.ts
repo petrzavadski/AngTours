@@ -1,5 +1,8 @@
 import { Injectable } from '@angular/core';
-import {IUser} from '../../app/models/user';
+import {IUser, IUserRegister} from '../../app/models/user';
+import { HttpClient } from '@angular/common/http';
+import { API } from '../shared/api';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -8,7 +11,7 @@ export class UserService {
 private userStorage: IUser[] = [];
 private curentUser: IUser | null = null;
 
-  constructor() { }
+  constructor(private http: HttpClient) { }
 
   private getUser(login : string): IUser | null {
     return this.userStorage.find((user)=> login === user.login) || null;
@@ -28,6 +31,16 @@ private curentUser: IUser | null = null;
 
   checkPassword(password:string): boolean {
     return !!this.userStorage.find((user)=> password === user.password) || null;
+  }
+
+  registerUser(user: IUserRegister): Observable<string> {
+    return this.http.post(API.registation, user, {responseType: 'text'});
+  }
+
+  authUser(user: IUser):Observable<string>{
+    return this.http.post(API.auth, user, {responseType: 'text'})
+
+    
   }
 
 }

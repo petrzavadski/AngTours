@@ -1,9 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 import { UserService } from '../../../services/user.service';
+import { IUser } from '../../../models/user';
+import { Router } from '@angular/router';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-authorization',
@@ -11,19 +14,45 @@ import { UserService } from '../../../services/user.service';
   templateUrl: './authorization.component.html',
   styleUrl: './authorization.component.scss',
 })
-export class AuthorizationComponent {
+export class AuthorizationComponent implements OnInit, OnDestroy{
  login: string;
   password:string;
 
-  constructor(private userService: UserService){}
+  constructor(private userService: UserService,
+    private router: Router,
+    private messageService: MessageService
+  ){}
 
   ngOnInit(): void{
 
   }
-  onLogin(event: Event): void {
-  console.log('User existance is ', this.userService.checkUser(this.login));
 
-  console.log('Password is', (this.userService.checkUser(this.login) && this.userService.checkPassword(this.password) === true) ? 'correct' : 'incorrect');
+  ngOnDestroy():void {}
+
+  onLogin(event: Event): void {
+  event.preventDefault();
+
+  const user: IUser = {
+    login: this.login,
+    password: this.password
   }
+
+  
+  this.userService.authUser(user).subscribe({
+    next: () => { 
+  this.router.navigate(['tickets']);
+
+    },
+    error: () => {  
+      this.initToast('error', 'Произошла ошибка');
+    }
+  });
+
+  }
+
+  initToast(type: 'error' | 'success', text: string): void{
+    this.messageService.add({ severity: type, detail: text, life: 3000});
+  }
+
  }
 

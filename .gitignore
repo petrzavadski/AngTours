@@ -6,6 +6,12 @@
 /out-tsc
 /bazel-out
 
+#Polytech task complition
+/tasks
+
+# user data for localhost:3000
+/server-data 
+
 # Node
 /node_modules
 npm-debug.log
